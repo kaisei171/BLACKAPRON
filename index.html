@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Black Apron Challenge 対策アプリ</title>
+  <meta name="theme-color" content="#006241">
+  <style>
+    :root {
+      --sb-green: #006241;
+      --sb-dark-green: #1e3932;
+      --sb-cream: #f2f0eb;
+      --sb-gold: #cba258;
+      --sb-red: #d93829;
+      --sb-gray: #f7f7f7;
+      --sb-border: #e0e0e0;
+      --sb-text: #212121;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Hiragino Kaku Gothic ProN", Meiryo, sans-serif; }
+    body {
+      background-color: var(--sb-cream);
+      color: var(--sb-text);
+      display: flex;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 12px;
+    }
+    .app-card {
+      width: 100%;
+      max-width: 640px;
+      background: #ffffff;
+      border-radius: 16px;
+      padding: 20px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+      display: flex;
+      flex-direction: column;
+    }
+    .header {
+      border-bottom: 2px solid var(--sb-green);
+      padding-bottom: 12px;
+      margin-bottom: 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .badge {
+      background: var(--sb-dark-green);
+      color: #fff;
+      font-size: 0.78rem;
+      font-weight: bold;
+      padding: 5px 12px;
+      border-radius: 20px;
+    }
+    .progress-text {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: #555;
+    }
+    .nav-tabs {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 14px;
+    }
+    .tab-btn {
+      flex: 1;
+      padding: 10px 4px;
+      background: var(--sb-gray);
+      border: 1.5px solid var(--sb-border);
+      border-radius: 8px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      cursor: pointer;
+      color: #555;
+      transition: all 0.2s;
+    }
+    .tab-btn.active {
+      background: var(--sb-green);
+      color: #fff;
+      border-color: var(--sb-green);
+    }
+    .filter-bar {
+      margin-bottom: 14px;
+    }
+    .filter-select {
+      width: 100%;
+      padding: 9px 12px;
+      border-radius: 8px;
+      border: 1.5px solid var(--sb-border);
+      background: #fff;
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--sb-dark-green);
+    }
+    .question-box {
+      font-size: 1.15rem;
+      font-weight: 700;
+      line-height: 1.55;
+      margin-bottom: 20px;
+      min-height: 54px;
+      color: #111;
+    }
+    .options-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 18px;
+    }
+    .opt-btn {
+      width: 100%;
+      text-align: left;
+      padding: 14px 16px;
+      border: 1.5px solid var(--sb-border);
+      border-radius: 10px;
+      background: #ffffff;
+      font-size: 0.95rem;
+      cursor: pointer;
+      line-height: 1.4;
+      transition: all 0.15s ease;
+      color: #222;
+    }
+    .opt-btn:hover:not(:disabled) {
+      border-color: var(--sb-green);
+      background-color: #f6faf8;
+    }
+    .opt-btn.correct {
+      background-color: #e8f5e9 !important;
+      border-color: var(--sb-green) !important;
+      color: var(--sb-green) !important;
+      font-weight: 700;
+    }
+    .opt-btn.wrong {
+      background-color: #fdecea !important;
+      border-color: var(--sb-red) !important;
+      color: var(--sb-red) !important;
+      font-weight: 700;
+    }
+    .result-section {
+      display: none;
+      background: #fdfdfd;
+      border: 1.5px solid var(--sb-border);
+      border-radius: 12px;
+      padding: 16px;
+      margin-top: 4px;
+      animation: fadeIn 0.25s ease-in-out;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .verdict-title {
+      font-size: 1.15rem;
+      font-weight: 800;
+      margin-bottom: 8px;
+    }
+    .explanation-text {
+      font-size: 0.92rem;
+      line-height: 1.55;
+      color: #444;
+      margin-bottom: 16px;
+    }
+    .action-row {
+      display: flex;
+      gap: 8px;
+    }
+    .act-btn {
+      flex: 1;
+      padding: 13px;
+      border: none;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 0.92rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+    }
+    .btn-clean {
+      background: var(--sb-green);
+      color: white;
+    }
+    .btn-retry {
+      background: var(--sb-gold);
+      color: white;
+    }
+    .footer {
+      margin-top: 20px;
+      padding-top: 12px;
+      border-top: 1px solid var(--sb-border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.8rem;
+      color: #777;
+    }
+    .reset-link {
+      background: none;
+      border: none;
+      color: #888;
+      text-decoration: underline;
+      cursor: pointer;
+      font-size: 0.8rem;
+    }
+  </style>
+</head>
+<body>
+
+<div class="app-card">
+  <div class="header">
+    <span class="badge" id="catBadge">カテゴリ</span>
+    <span class="progress-text" id="progText">1 / 10 問</span>
+  </div>
+
+  <div class="nav-tabs">
+    <button class="tab-btn active" id="tabAll" onclick="setMode('all')">全問モード</button>
+    <button class="tab-btn" id="tabReview" onclick="setMode('review')">要復習リスト (<span id="revCount">0</span>)</button>
+  </div>
+
+  <div class="filter-bar" id="filterArea">
+    <select class="filter-select" id="catFilter" onchange="filterCategory()">
+      <option value="ALL">すべてのカテゴリー</option>
+    </select>
+  </div>
+
+  <div class="question-box" id="qText">問題を読み込んでいます...</div>
+  <div class="options-list" id="optContainer"></div>
+
+  <div class="result-section" id="resSection">
+    <div class="verdict-title" id="verdictLabel"></div>
+    <div class="explanation-text" id="expLabel"></div>
+    <div class="action-row" id="actContainer"></div>
+  </div>
+
+  <div class="footer">
+    <span>Black Apron Exam Preparation App</span>
+    <button class="reset-link" onclick="clearReviewHistory()">復習リストをリセット</button>
+  </div>
+</div>
+
+<script src="questions.js"></script>
+<script>
+  let activeList = [];
+  let curIndex = 0;
+  let activeMode = 'all';
+  let reviewIds = new Set(JSON.parse(localStorage.getItem('sb_ba_review_list') || '[]'));
+
+  function initCategories() {
+    const select = document.getElementById('catFilter');
+    const categories = Array.from(new Set(questions.map(q => q.category)));
+    categories.forEach(cat => {
+      const opt = document.createElement('option');
+      opt.value = cat;
+      opt.innerText = cat;
+      select.appendChild(opt);
+    });
+  }
+
+  function updateReviewBadge() {
+    document.getElementById('revCount').innerText = reviewIds.size;
+  }
+
+  function saveReviewStorage() {
+    localStorage.setItem('sb_ba_review_list', JSON.stringify([...reviewIds]));
+    updateReviewBadge();
+  }
+
+  function clearReviewHistory() {
+    if (confirm("要復習リストに登録された問題（" + reviewIds.size + "問）を全てリセットしますか？")) {
+      reviewIds.clear();
+      saveReviewStorage();
+      if (activeMode === 'review') setMode('all');
+    }
+  }
+
+  function setMode(mode) {
+    activeMode = mode;
+    document.getElementById('tabAll').classList.toggle('active', mode === 'all');
+    document.getElementById('tabReview').classList.toggle('active', mode === 'review');
+    document.getElementById('filterArea').style.display = (mode === 'all') ? 'block' : 'none';
+
+    if (mode === 'review') {
+      activeList = questions.filter(q => reviewIds.has(q.id));
+      if (activeList.length === 0) {
+        alert("要復習リストにはまだ問題が登録されていません！");
+        setMode('all');
+        return;
+      }
+    } else {
+      filterCategory();
+      return;
+    }
+    curIndex = 0;
+    renderCurrentQuestion();
+  }
+
+  function filterCategory() {
+    const selected = document.getElementById('catFilter').value;
+    if (selected === 'ALL') {
+      activeList = [...questions];
+    } else {
+      activeList = questions.filter(q => q.category === selected);
+    }
+    curIndex = 0;
+    renderCurrentQuestion();
+  }
+
+  function renderCurrentQuestion() {
+    const q = activeList[curIndex];
+    const resBox = document.getElementById('resSection');
+    resBox.style.display = 'none';
+
+    if (!q) {
+      document.getElementById('qText').innerText = "すべての問題が完了しました！お疲れ様でした☕️";
+      document.getElementById('optContainer').innerHTML = "";
+      document.getElementById('progText').innerText = "Complete";
+      return;
+    }
+
+    document.getElementById('catBadge').innerText = q.category;
+    document.getElementById('progText').innerText = `${curIndex + 1} / ${activeList.length} 問`;
+    document.getElementById('qText').innerText = q.question;
+
+    const optContainer = document.getElementById('optContainer');
+    optContainer.innerHTML = '';
+
+    q.options.forEach((optText, idx) => {
+      const btn = document.createElement('button');
+      btn.className = 'opt-btn';
+      btn.innerText = optText;
+      btn.onclick = () => onSelectAnswer(idx);
+      optContainer.appendChild(btn);
+    });
+  }
+
+  function onSelectAnswer(idx) {
+    const q = activeList[curIndex];
+    const isCorrect = (idx === q.answer);
+    const buttons = document.querySelectorAll('.opt-btn');
+    buttons.forEach((b, i) => {
+      b.disabled = true;
+      if (i === q.answer) b.classList.add('correct');
+      if (i === idx && !isCorrect) b.classList.add('wrong');
+    });
+
+    const resSection = document.getElementById('resSection');
+    const verdictLabel = document.getElementById('verdictLabel');
+    const expLabel = document.getElementById('expLabel');
+    const actContainer = document.getElementById('actContainer');
+
+    resSection.style.display = 'block';
+    expLabel.innerText = q.explanation;
+
+    if (isCorrect) {
+      verdictLabel.innerText = "⭕ 正解！";
+      verdictLabel.style.color = "var(--sb-green)";
+      actContainer.innerHTML = `
+        <button class="act-btn btn-clean" onclick="advanceQuestion(false)">完璧（次へ）</button>
+        <button class="act-btn btn-retry" onclick="advanceQuestion(true)">たまたま/不安（復習に残す）</button>
+      `;
+    } else {
+      verdictLabel.innerText = "❌ 不正解...";
+      verdictLabel.style.color = "var(--sb-red)";
+      reviewIds.add(q.id);
+      saveReviewStorage();
+      actContainer.innerHTML = `
+        <button class="act-btn btn-clean" onclick="advanceQuestion(false)">次へ（自動で要復習へ追加）</button>
+      `;
+    }
+  }
+
+  function advanceQuestion(keepInReview) {
+    const q = activeList[curIndex];
+    if (keepInReview) {
+      reviewIds.add(q.id);
+    } else if (activeMode === 'review' && !keepInReview) {
+      // 復習モードで完璧を選んだ場合はリストから除去
+      reviewIds.delete(q.id);
+    }
+    saveReviewStorage();
+
+    curIndex++;
+    renderCurrentQuestion();
+  }
+
+  // 初期化
+  initCategories();
+  updateReviewBadge();
+  setMode('all');
+</script>
+</body>
+</html>
